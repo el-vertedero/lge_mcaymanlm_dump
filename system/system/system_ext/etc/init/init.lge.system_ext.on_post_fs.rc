@@ -1,0 +1,2 @@
+on post-fs
+  load_custom_props --chameleon-prop

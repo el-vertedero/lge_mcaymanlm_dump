@@ -1,0 +1,64 @@
+on init
+    # Mount pstore file system on /mnt/pstore
+    mkdir /dev/pstore 660 system system
+    mount pstore /dev/pstore /dev/pstore
+    chown root system /proc/pl_lk
+    chmod 0444 /proc/pl_lk
+
+on post-fs-data
+    mkdir /data/ramoops 0750 root log
+    mkdir /data/ramoops/pl_lk 0750 root log
+    mkdir /data/logger 0775 system system
+
+# ramoops bakcup
+    rm /data/ramoops/console-ramoops
+    copy /sys/fs/pstore/console-ramoops /data/ramoops/console-ramoops
+    chmod 0644 /data/ramoops/console-ramoops
+
+# bootloader_log bakcup
+    rm /data/logger/bootloader_log
+    copy /proc/pl_lk /data/logger/bootloader_log
+    chmod 0644 /data/logger/bootloader_log
+
+on post-fs
+    mkdir /mnt/product/persist-lg/.sreadahead 0700 root root
+    chown root system /mnt/product/persist-lg/.sreadahead
+    chmod 0770 /mnt/product/persist-lg/.sreadahead
+
+    chown root system /mnt/product/persist-lg/.sreadahead/.sreadahead_done
+    chmod 0660 /mnt/product/persist-lg/.sreadahead/.sreadahead_done
+
+    chown root system /mnt/product/persist-lg/.sreadahead/.readahead_list.txt
+    chmod 0660 /mnt/product/persist-lg/.sreadahead/.readahead_list.txt
+    start sreadahead
+
+# LGE ramoops backup function service
+service ramoops_backup /system_ext/bin/ramoops_backup.sh
+    class main
+    user root
+    disabled
+    oneshot
+
+# LGE time_in_stae function service
+service time_in_state /system_ext/bin/init.time_in_state.sh
+    class main
+    user root
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+   start ramoops_backup
+   start time_in_state
+
+service sreadahead /system_ext/bin/treadahead
+    oneshot
+    disabled
+    seclabel u:r:sreadahead:s0
+
+# make a diecision whether sreadahead would be performed or not.
+service sreadahead-check /system_ext/bin/sreadahead_check
+    class main
+    user root
+    group root system
+    oneshot
+    seclabel u:r:sreadahead-check:s0
