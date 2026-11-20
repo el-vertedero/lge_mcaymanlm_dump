@@ -1,0 +1,12 @@
+#line 1 "device/lge/sepolicy/common/service_contexts"
+# LGE service contexts
+
+broadcast.dmb                 u:object_r:lgemtvserver_service:s0
+
+# Ashmemtest
+ashmemtest_svc                u:object_r:lge_ashmemtest_service:s0
+###
+#line 1 "system/sepolicy/reqd_mask/service_contexts"
+# empty service_contexts file - this file is used to generate an empty
+# non-platform service_context for devices without any service_contexts
+# customizations.

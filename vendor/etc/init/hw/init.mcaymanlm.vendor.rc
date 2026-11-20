@@ -1,0 +1,80 @@
+#file will be installed as vendor/etc/init/hw/init.{ro.hardware}.rc
+
+import /vendor/etc/init/hw/init.lge.audio.rc
+# import $(TARGET_PRODUCT) vendor rc file
+import /vendor/etc/init/hw/init.${ro.hardware}_vendor.rc
+import /vendor/etc/init/hw/init.lge.display.rc
+
+import /vendor/etc/init/hw/init.lge.sensors.rc
+import /vendor/etc/init/hw/init.lge.fingerprints.rc
+
+# LGP_MODEMBSP_RAT_CONFIG - Start
+import /vendor/etc/init/hw/init.lge.rat_config.rc
+# LGP_MODEMBSP_RAT_CONFIG - End
+
+on post-fs-data
+# NFC: create data/nfc for nv storage
+    mkdir /data/vendor/nfc 0770 nfc nfc
+
+    mkdir /data/vendor/power 0771 root system
+    chown system system /mnt/vendor/power
+    chmod 0771 /mnt/vendor/power
+    restorecon /mnt/vendor/power
+    restorecon_recursive /mnt/vendor/power
+
+on post-fs
+# Load exfat module
+    insmod /vendor/lib/modules/texfat.ko
+
+on property:ro.boot.vendor.lge.sim_num=1
+    setprop persist.radio.multisim.config ss
+
+on property:ro.boot.vendor.lge.sim_num=2
+    setprop persist.radio.multisim.config dsds
+
+#[START][SEC_USA][RSU] Start tsdemon
+service tsdaemon /vendor/bin/tsdaemon
+    class main
+    user system
+    group system net_admin net_raw
+    disabled
+
+#service rsudaemon /vendor/bin/rsudaemon
+#    class main
+#    user system
+#    group system net_admin net_raw
+#    disabled
+
+on property:ro.vendor.lge.build.target_operator=TMO
+    enable tsdaemon
+
+on property:ro.vendor.lge.build.target_operator=MPCS
+    enable tsdaemon
+
+on property:ro.vendor.lge.build.target_operator=SPR
+    enable tsdaemon
+
+#on property:ro.vendor.lge.build.target_operator=ATT
+#    enable rsudaemon
+
+#on property:ro.vendor.lge.build.target_operator=CRK
+#    enable rsudaemon
+
+#[END][SEC_USA][RSU]
+
+on boot
+# Western Digital UFS FFU
+    write /proc/bootprof "START : ufs_ffu for SDINEDK4-128G"
+    exec /vendor/bin/ufs_util ffu_do /dev/block/sdc /vendor/ffu/FFUWDC_SDINEDK4-128G_1094.bin 145 1082
+    exec /vendor/bin/ufs_util ffu_do /dev/block/sdc /vendor/ffu/FFUWDC_SDINEDK4-128G_1094.bin 145 1088
+
+# MME driver
+    chown system system /sys/class/lge_mme/mme_ctrl/mme_command
+    chmod 664 /sys/class/lge_mme/mme_ctrl/mme_command
+    chown system system /sys/class/lge_mme/mme_ctrl/hw_test_value
+    chmod 664 /sys/class/lge_mme/mme_ctrl/hw_test_value
+
+on post-fs-data
+    restorecon /sys/class/lge_mme/mme_ctrl/mme_command
+    restorecon /sys/class/lge_mme/mme_ctrl/hw_test_value
+

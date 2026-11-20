@@ -1,0 +1,21 @@
+service vendor.chargerlogo /vendor/bin/chargerlogo
+    class charger
+    user system
+    group system graphics input wakelock
+    capabilities BLOCK_SUSPEND
+    oneshot
+    disabled
+
+on property:init.svc.vendor.chargerlogo=stopped
+    write /sys/module/lge_handle_panic/parameters/gen_bug 1
+
+on charger
+    start system_suspend
+
+    exec_start apexd-charger
+
+    trigger lapex-mount
+    trigger charger-boot
+
+on charger-boot
+    start vendor.chargerlogo
