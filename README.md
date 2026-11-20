@@ -1,0 +1,14 @@
+# mcaymanlm-user 11 RKQ1.210420.001 221041357a1fb release-keys
+- manufacturer: lge
+- platform: mt6885
+- codename: mcaymanlm
+- flavor: mcaymanlm-user
+- release: 11
+- id: RKQ1.210420.001
+- incremental: 221041357a1fb
+- tags: release-keys
+- fingerprint: lge/mcaymanlm/mcaymanlm:11/RKQ1.210420.001/221041357a1fb:user/release-keys
+- is_ab: true
+- brand: lge
+- branch: mcaymanlm-user-11-RKQ1.210420.001-221041357a1fb-release-keys
+- repo: lge_mcaymanlm_dump

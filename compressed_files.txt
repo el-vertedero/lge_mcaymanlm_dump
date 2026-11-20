@@ -1,0 +1,5 @@
+system/system/apex/com.android.vndk.current.apex.zst
+product/priv-app/GalleryStudio/GalleryStudio.apk.zst
+product/priv-app/ARCamera/ARCamera.apk.zst
+product/priv-app/Velvet/Velvet.apk.zst
+product/priv-app/GmsCore/GmsCore.apk.zst
